@@ -1,0 +1,16 @@
+[
+  {
+    "role_id": "rabbit_officer",
+    "display_name": "兔子警官",
+    "tts_profile": {
+      "primary_provider": "melotts",
+      "fallback_provider": "windows_sapi",
+      "voice": "zh_female_01",
+      "language": "zh",
+      "speed": 1.06,
+      "pitch": 1.04,
+      "volume": 1.0,
+      "emotion_default": "cheerful"
+    }
+  }
+]

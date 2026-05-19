@@ -1,0 +1,29 @@
+﻿{
+  "schema_version": "1.0",
+  "updated_at": "2026-05-19",
+  "policy": {
+    "require_owner_approval_before_execute": true,
+    "allow_chat_approval_token": true,
+    "chat_approval_token": "APPROVE"
+  },
+  "pending": [
+    {
+      "id": "tts-atom-mvp-0001-approval",
+      "scope": "start_execution",
+      "task_id": "tts-atom-mvp-0001",
+      "summary": "Approve AI to implement tts-atom MVP per specs/tts-atom-mvp.spec.md and plans/tts-atom-mvp-0001.plan.md until goal.md Success Criteria are verified.",
+      "status": "APPROVED",
+      "owner_note": "Owner approved via chat"
+    }
+  ],
+  "history": [
+    {
+      "id": "init-approval",
+      "scope": "start_execution",
+      "task_id": null,
+      "summary": "Bootstrap only — superseded by tts-atom-mvp-0001-approval",
+      "status": "SUPERSEDED",
+      "owner_note": ""
+    }
+  ]
+}

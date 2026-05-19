@@ -1,0 +1,33 @@
+﻿{
+  "schema_version": "1.0",
+  "updated_at": "2026-05-19",
+  "current_task_id": null,
+  "tasks": [
+    {
+      "id": "bootstrap-0001",
+      "title": "GAEH Bootstrap Skeleton",
+      "route": "B",
+      "status": "done",
+      "depends_on": [],
+      "artifacts": {
+        "spec": null,
+        "plan": "plans/bootstrap-0001.plan.md",
+        "review": "reviews/bootstrap-0001.review.md",
+        "report": "reports/bootstrap-0001.report.md"
+      }
+    },
+    {
+      "id": "tts-atom-mvp-0001",
+      "title": "tts-atom MVP — local TTS atomic service",
+      "route": "B",
+      "status": "done",
+      "depends_on": ["bootstrap-0001"],
+      "artifacts": {
+        "spec": "specs/tts-atom-mvp.spec.md",
+        "plan": "plans/tts-atom-mvp-0001.plan.md",
+        "review": "reviews/tts-atom-mvp-0001.review.md",
+        "report": "reports/tts-atom-mvp-0001.report.md"
+      }
+    }
+  ]
+}

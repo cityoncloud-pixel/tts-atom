@@ -1,0 +1,78 @@
+{
+  "schema_version": "1.0",
+  "verdict": "PASS",
+  "summary": "goal.draft 满足 GGS Hard Gates：交付物明确、5 条可验证成功标准、In/Out 清晰、约束与假设已落盘、输入与产物路径具体，可直接导出供 GAEH 消费。",
+  "checks": [
+    {
+      "id": "clarity",
+      "status": "pass",
+      "note": "Intent 与 Target Outcome 对齐 idea.md 一句话定义；MVP 边界与 §19 一致。"
+    },
+    {
+      "id": "verifiability",
+      "status": "pass",
+      "note": "含 CLI、HTTP、分句、pytest 四条命令级/行为级验收；第 5 条约束架构可审计。"
+    },
+    {
+      "id": "scope_size",
+      "status": "pass",
+      "note": "In Scope 为可在一个 Normal 周期完成的 MVP；Out 明确排除 Launcher、流式、业务逻辑。"
+    },
+    {
+      "id": "hidden_prereqs",
+      "status": "pass",
+      "note": "MockProvider 无模型前提已写入 Success Criteria 与 A-0005；MeloTTS 模型为可选增强。"
+    },
+    {
+      "id": "gaeh_executable",
+      "status": "pass",
+      "note": "含 Execution Handoff、seed_tasks、Approval Policy；handoff 见本文件 handoff 段。"
+    },
+    {
+      "id": "needs_owner_input",
+      "status": "pass",
+      "note": "idea Context 空白项已由 assumptions 补齐；无 BLOCKING 开放问题。"
+    }
+  ],
+  "open_questions": [],
+  "assumptions_needed": [
+    "A-0001",
+    "A-0002",
+    "A-0003",
+    "A-0004",
+    "A-0005",
+    "A-0006",
+    "A-0007"
+  ],
+  "auto_revisions": [],
+  "handoff": {
+    "recommended_route": "spec_first",
+    "seed_tasks": [
+      "scaffold: pyproject.toml, tts_atom package, .env.example, directory layout",
+      "schemas: Pydantic models, unified error, timing types",
+      "mock-provider: MockProvider + pytest synthesize path without real MeloTTS",
+      "core: engine, router, splitter, cache, audio_store, prewarm",
+      "http: FastAPI server, /healthz, /api/tts/*, static /audio",
+      "cli: synth, serve, voices, doctor sharing core engine",
+      "melotts: MeloTTSProvider integration path + doctor checks",
+      "docs: README install/dev/BFF integration; default_roles.json"
+    ],
+    "spec_outline": [
+      "System context & voice-atom symmetry",
+      "Provider interface & auto routing/fallback",
+      "HTTP API contract (request/response/errors)",
+      "Cache key & directory layout",
+      "Sentence splitting rules",
+      "Role profile resolution",
+      "CLI commands & env configuration",
+      "Verification matrix (maps to Success Criteria 1-4)"
+    ],
+    "verification_plan": [
+      "pytest (full suite, mock provider)",
+      "tts-atom synth --json + cache hit",
+      "tts-atom serve + curl /healthz + POST /api/tts/synthesize",
+      "POST /api/tts/split-synthesize with multi-segment text",
+      "tts-atom doctor --json"
+    ]
+  }
+}
