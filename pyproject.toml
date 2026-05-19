@@ -22,6 +22,11 @@ dev = [
   "pytest>=8.0",
   "httpx>=0.27",
 ]
+melotts = [
+  "melotts @ git+https://github.com/myshell-ai/MeloTTS.git",
+  "numpy>=1.24",
+  "soundfile>=0.12",
+]
 
 [project.scripts]
 tts-atom = "tts_atom.main:app"

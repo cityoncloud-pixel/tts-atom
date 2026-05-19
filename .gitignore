@@ -15,5 +15,6 @@ cache/**/*
 !cache/.gitkeep
 models/**/*
 !models/.gitkeep
+.tmp_pip/
 *.wav
 !tests/fixtures/

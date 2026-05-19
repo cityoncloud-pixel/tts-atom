@@ -1,64 +1,59 @@
 from __future__ import annotations
 
-from pathlib import Path
+import logging
 
-from tts_atom.config import get_settings
-from tts_atom.providers.audio_util import silent_wav_bytes, wav_duration_ms
+from tts_atom.providers import melotts_runtime
 from tts_atom.providers.base import TTSProvider, TTSProviderResult
 from tts_atom.schemas import TTSRequest, VoiceInfo
 
-DEFAULT_VOICES = [
-    VoiceInfo(
-        voice="zh_female_01",
-        provider="melotts",
-        language="zh",
-        gender="female",
-        description="中文女声（MeloTTS 默认映射）",
-        recommended_roles=["rabbit_officer", "assistant", "narrator"],
-    ),
-]
+logger = logging.getLogger(__name__)
 
 
 class MeloTTSProvider(TTSProvider):
     name = "melotts"
 
-    def _models_path(self) -> Path:
-        return get_settings().models_root
-
     def is_available(self) -> bool:
-        root = self._models_path()
-        if not root.exists():
-            return False
-        # Consider available if models dir has any content or marker file
-        marker = root / ".melotts_ready"
-        if marker.exists():
-            return True
-        return any(root.iterdir()) if root.is_dir() else False
+        return melotts_runtime.is_melotts_usable()
 
     def list_voices(self, language: str | None = None) -> list[VoiceInfo]:
         if not self.is_available():
             return []
-        if language and language not in ("zh", "mixed_zh_en"):
-            return [v for v in DEFAULT_VOICES if v.language == language]
-        return DEFAULT_VOICES
+        voices: list[VoiceInfo] = []
+        for voice_id, melo_lang, desc in melotts_runtime.list_melo_voices(language):
+            voices.append(
+                VoiceInfo(
+                    voice=voice_id,
+                    provider=self.name,
+                    language=language or ("zh" if melo_lang == "ZH" else "en"),
+                    description=desc,
+                    recommended_roles=["rabbit_officer", "assistant", "narrator"],
+                )
+            )
+        return voices
 
     def synthesize(self, request: TTSRequest) -> TTSProviderResult:
-        voice = request.voice or "zh_female_01"
-        # Real MeloTTS integration: install melotts and load model from models_root.
-        # MVP: if models present, still use placeholder wav until melotts package wired.
-        try:
-            import melotts  # noqa: F401 — optional dependency
-            # Future: call melotts synthesis here
-        except ImportError:
-            pass
-
         if not self.is_available():
-            raise RuntimeError("MeloTTS models not configured under TTS_ATOM_MODELS_ROOT")
+            raise RuntimeError(
+                "MeloTTS is not installed. Run: pip install -e '.[melotts]' "
+                "or scripts/install_melotts.ps1"
+            )
+        voice = request.voice or "zh_female_01"
+        speed = max(0.5, min(float(request.speed), 2.0))
+        try:
+            audio_bytes, duration_ms = melotts_runtime.synthesize_melotts(
+                request.text,
+                voice=voice,
+                language=request.language,
+                speed=speed,
+                sample_rate=request.sample_rate,
+            )
+        except Exception as exc:
+            logger.exception("MeloTTS synthesis failed")
+            raise RuntimeError(f"MeloTTS synthesis failed: {exc}") from exc
 
-        data = silent_wav_bytes(max(100, int(80 * len(request.text))), request.sample_rate)
         return TTSProviderResult(
-            audio_bytes=data,
-            duration_ms=wav_duration_ms(data),
+            audio_bytes=audio_bytes,
+            duration_ms=duration_ms,
             provider=self.name,
             voice=voice,
         )

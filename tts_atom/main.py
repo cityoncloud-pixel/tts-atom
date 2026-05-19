@@ -87,6 +87,8 @@ def voices(
 
 @app.command()
 def doctor(as_json: bool = typer.Option(False, "--json")) -> None:
+    from tts_atom.providers import melotts_runtime
+
     settings = get_settings()
     engine = get_engine()
     report = {
@@ -96,6 +98,7 @@ def doctor(as_json: bool = typer.Option(False, "--json")) -> None:
         "models_root": str(settings.models_root.resolve()),
         "providers": engine.registry.availability(),
         "force_mock": settings.force_mock,
+        "melotts": melotts_runtime.doctor_info(),
     }
     if as_json:
         _print_json(report)

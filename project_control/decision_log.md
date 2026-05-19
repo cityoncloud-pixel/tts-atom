@@ -17,3 +17,9 @@
 - `pytest` 11 passed；CLI synth 缓存命中验证通过。
 - MeloTTS 真实推理留待后续；当前 `models/` 占位 + 占位 WAV 满足 MVP 验收。
 
+## 2026-05-19 — MeloTTS 真实接入
+
+- 新增 `melotts_runtime.py`：`melo.api.TTS` 内存合成 + `melo` CLI 回退；模型 HF 缓存至 `models/`。
+- `is_available()` 改为检测真实 MeloTTS 安装，不再依赖 `models/.gitkeep`。
+- 可选依赖：`pip install -e ".[melotts]"`；Windows 需 MSVC 或 WSL/Docker。
+

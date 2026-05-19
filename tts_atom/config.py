@@ -20,6 +20,11 @@ class Settings(BaseSettings):
     default_sample_rate: int = 24000
     log_level: str = "INFO"
     force_mock: bool = False
+    melotts_device: str = "auto"
+    melotts_use_hf: bool = True
+    melotts_ckpt_path: str | None = None
+    melotts_cli_path: str | None = None
+    melotts_timeout_sec: int = 120
 
 
 @lru_cache

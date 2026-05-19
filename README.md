@@ -71,9 +71,61 @@ curl -X POST http://127.0.0.1:9020/api/tts/synthesize ^
 - 目录：`cache/{provider}/{voice}/{sha256}.wav`
 - 清理：`tts-atom cache clear`
 
-## MeloTTS 模型（可选）
+## MeloTTS 真实合成
 
-将模型文件放入 `models/`，或创建 `models/.melotts_ready` 标记。安装真实 MeloTTS 后可在 `melotts_provider.py` 中扩展合成调用。
+基于 [MeloTTS](https://github.com/myshell-ai/MeloTTS)（`from melo.api import TTS`），支持 **Python API** 与 **`melo` CLI** 双路径。
+
+### 安装
+
+```bash
+# 推荐：从 GitHub 安装（PyPI 的 melotts 包可能损坏）
+pip install -e ".[melotts]"
+
+# Windows 可运行脚本
+powershell -ExecutionPolicy Bypass -File scripts/install_melotts.ps1
+```
+
+首次合成会从 HuggingFace 下载权重，缓存目录默认 `models/`（通过 `HF_HOME` / `HUGGINGFACE_HUB_CACHE`）。
+
+**Windows 方式 A（推荐，已在本项目验证）**：
+
+```powershell
+powershell -ExecutionPolicy Bypass -File scripts/install_melotts.ps1
+```
+
+要点：
+- `fugashi>=1.5.2` 使用预编译 wheel，**无需 MSVC**
+- `transformers`/`tokenizers` 使用 Py3.12 有 wheel 的版本，**无需 Rust**
+- 首次 `doctor` 会从 HuggingFace 下载多语言 BERT（仅中文合成也会预拉取，耗时较长）
+- 中英混合文本需 NLTK：`nltk.download('averaged_perceptron_tagger_eng')`（安装脚本已包含）
+
+若仍失败，可参考 [MeloTTS install.md](https://github.com/myshell-ai/MeloTTS/blob/main/docs/install.md) 或使用 WSL2。
+
+### 配置（`.env`）
+
+| 变量 | 说明 |
+|------|------|
+| `TTS_ATOM_MELOTTS_DEVICE` | `auto` / `cpu` / `cuda` |
+| `TTS_ATOM_MELOTTS_USE_HF` | 从 HuggingFace 拉取模型（默认 true） |
+| `TTS_ATOM_MELOTTS_CKPT_PATH` | 可选本地 checkpoint |
+| `TTS_ATOM_MELOTTS_CLI_PATH` | 可选 `melo.exe` 路径 |
+
+### 验证
+
+```bash
+tts-atom doctor --json    # 查看 melotts.backend: python_api | cli | none
+tts-atom synth --text "你好，小警员" --provider melotts --json
+```
+
+### 音色映射
+
+| voice_id | MeloTTS |
+|----------|---------|
+| `zh_female_01` | ZH / ZH |
+| `en_us` | EN / EN-US |
+| `en_default` | EN / EN-Default |
+
+详见 `tts_atom/providers/melotts_runtime.py` 中 `VOICE_SPEAKER_MAP`。
 
 ## Companion BFF 接入
 
